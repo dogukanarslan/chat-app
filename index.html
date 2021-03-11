@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+      crossorigin="anonymous"
+    />
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Send Message</h1>
+        <form>
+          <div class="form-group">
+            <input
+              id="name"
+              class="form-control"
+              type="text"
+              placeholder="name"
+            />
+          </div>
+          <div class="form-group">
+            <input
+              class="form-control"
+              id="message"
+              type="text"
+              placeholder="message"
+            />
+          </div>
+
+          <button class="btn btn-dark btn-sm">Send</button>
+        </form>
+
+        <div id="messages"></div>
+      </div>
+    </div>
+    <script>
+      const socket = io();
+
+      const $name = document.querySelector("#name");
+      const $message = document.querySelector("#message");
+      const $messages = document.querySelector("#messages");
+      const $form = document.querySelector("form");
+
+      let messages = [];
+      $form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const name = $name.value;
+        const message = $message.value;
+        fetch("http://127.0.0.1:3000/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            message,
+          }),
+        });
+      });
+
+      const getMessages = () => {
+        fetch("http://127.0.0.1:3000/messages")
+          .then((res) => res.json())
+          .then((data) => {
+            data.forEach((message) => {
+              $messages.innerHTML += `<h4>${name}</h4><p>${message}</p>`;
+            });
+          });
+      };
+
+      socket.on("message", () => {
+        const name = $name.value;
+        const message = $message.value;
+        $message.value = "";
+        $messages.innerHTML += `<h4>${name}</h4><p>${message}</p>`;
+      });
+    </script>
+  </body>
+</html>
