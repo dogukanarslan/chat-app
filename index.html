@@ -73,10 +73,12 @@
           .then((res) => res.json())
           .then((data) => {
             data.forEach((message) => {
-              $messages.innerHTML += `<h4>${name}: </h4><p>${message}</p>`;
+              $messages.innerHTML += `<h4>${message.name}: </h4><p>${message.message}</p>`;
             });
           });
       };
+
+      getMessages();
 
       socket.on("message", () => {
         const name = $name.value;
