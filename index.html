@@ -58,7 +58,6 @@
         const name = $name.value;
         const message = $message.value;
         $message.value = "";
-        $messages.innerHTML += `<h4>${name}:</h4><p>${message}</p>`;
         fetch(`${api}/messages`, {
           method: "POST",
           headers: {

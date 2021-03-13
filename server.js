@@ -3,6 +3,7 @@ const app = express();
 const http = require("http").createServer(app);
 const mongoose = require("mongoose");
 const io = require("socket.io")(http);
+const MessageRoute = require("./Routes/MessageRoute");
 require("dotenv").config();
 
 var allowCrossDomain = function (req, res, next) {
@@ -18,27 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(allowCrossDomain);
 
-const Message = mongoose.model("Message", {
-  name: String,
-  message: String,
-});
+app.set("socketio", io);
 
-app.get("/messages", (req, res) => {
-  Message.find({}, (err, messages) => {
-    res.send(messages);
-  });
-});
-
-app.post("/messages", (req, res) => {
-  const message = new Message(req.body);
-  message.save((err) => {
-    if (err) {
-      sendStatus(500);
-    }
-    io.emit("message", req.body);
-    res.sendStatus(200);
-  });
-});
+app.use("/messages", MessageRoute);
 
 mongoose
   .connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true })
